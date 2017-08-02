@@ -1,0 +1,11 @@
+name: WorldEditor
+version: 1.0.0
+api: [1.0.0]
+author: anjing
+main: WorldEditor\Main
+description: "A plugin help players to build easily!"
+
+commands:
+ wemode:
+  description: Open the World Edit Mode
+  permission: op
