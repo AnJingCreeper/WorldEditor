@@ -47,34 +47,54 @@ class Main extends PluginBase implements Listener
 	public function playerBlockTouch(PlayerInteractEvent $event)
 	{
 		global $WEmode;
-		if($WEmode=="on")
+		$player=$event->getPlayer();
+		$itemId=$event->getItem()->getID();
+		if($WEmode=="on"&&$player->isOp()&&$itemId==271)
 		{	
+			
 			$blockid=$event->getBlock()->getID();
 			$block=$event->getBlock();
-			$tmp="on";
+			static $tmp="on";
 			if($tmp=="on")
 			{
 				$this->position1=array( "x"=>$block->x,
 										"y"=>$block->y,
 										"z"=>$block->z,
-										"id"=>$blockid);
+										"id"=>$blockid,
+										"player"=>$player);
 				$tmp="off";
+				$player->sendMessage(TextFormat::WHITE."Set FIRST point:".$this->position1['x'].",".$this->position1['y'].",".$this->position1['z']);
+
 			}
 			else
 			{
 				$this->position2=array( "x"=>$block->x,
 										"y"=>$block->y,
 										"z"=>$block->z,
-										"id"=>$block->$blockid);
+										"id"=>$blockid,
+										"player"=>$player);
 				$tmp="on";
+				$player->sendMessage(TextFormat::WHITE."Set SECOND point:".$this->position2['x'].",".$this->position2['y'].",".$this->position2['z']);
 				
 			}
-			$player=$event->getPlayer();
-			$text="Block ID:".$blockid;
 			$player->sendMessage(TextFormat::BLUE.$block->x.",".$block->y.",".$block->z.",".$blockid);
-			$player->sendMessage(TextFormat::GREEN.$text);
 		}
 	}
+	public function fillBlock(BlockPlaceEvent $event)
+	{
+		global $WEmode;
+		$player=$event->getPlayer();
+		$block=$event->getBlock();
+		if(($this->position1['player']==$this->position2['player'])&&$WEmode=="on"&&($this->position1['player']==$player))
+			{
+				$event->setCancelled(true);
+				$command="fill ".$this->position1['x']." ".$this->position1['y']." ".$this->position1['z']." ".$this->position2['x']." ".$this->position2['y']." ".$this->position2['z']." ".$block->getID();
+				//$player->sendMessage(TextFormat::WHITE.$command);
+				$this->getServer()->dispatchCommand($player,$command);
+				
+			}
+	}
+	
 }
 
 ?>
